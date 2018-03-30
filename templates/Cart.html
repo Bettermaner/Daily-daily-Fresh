@@ -3,7 +3,7 @@
 {% load staticfiles %}
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-	<title>天天生鲜-收获地址</title>
+	<title>天天生鲜-个人信息</title>
 	<link rel="stylesheet" type="text/css" href={% static "css/reset.css" %}>
 	<link rel="stylesheet" type="text/css" href={% static "css/main.css" %}>
 	<script type="text/javascript" src={% static "js/jquery-1.12.4.min.js" %}></script>
@@ -34,74 +34,73 @@
 					<span>|</span>
 					<a href={% url 'users:user' %}>用户中心</a>
 					<span>|</span>
-					<a href={% url 'cart:cart' %}>我的购物车</a>
+					<a href="{% url 'cart:cart' %}">我的购物车</a>
 					<span>|</span>
-					<a href={% url 'users:order' %}>我的订单</a>
+					<a href="{% url 'users:order' %}">我的订单</a>
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<div class="search_bar clearfix">
-		<a href="{% url 'goods:index' %}" class="logo fl"><img src={% static "images/logo.png" %}></a>
-		<div class="sub_page_name fl">|&nbsp;&nbsp;&nbsp;&nbsp;用户中心</div>
+		<a href="index.html" class="logo fl"><img src={% static "images/logo.png" %}></a>
+		<div class="sub_page_name fl">|&nbsp;&nbsp;&nbsp;&nbsp;购物车</div>
 		<div class="search_con fr">
 			<input type="text" class="input_text fl" name="" placeholder="搜索商品">
 			<input type="button" class="input_btn fr" name="" value="搜索">
 		</div>
 	</div>
 
-	<div class="main_con clearfix">
-		<div class="left_menu_con clearfix">
-			<h3>用户中心</h3>
-			<ul>
-				<li><a href="{% url 'users:user' %}" >· 个人信息</a></li>
-				<li><a href="{% url 'users:order' %}">· 全部订单</a></li>
-				<li><a href="{% url 'users:address' %}" class="active" >· 收货地址</a></li>
-			</ul>
-		</div>
-		<div class="right_content clearfix">
-				<h3 class="common_title2">收货地址</h3>
-				<div class="site_con">
-					<dl>
-						<dt>当前地址：</dt>
-                        {% if address %}
-                        <dd> {{ address.detail_addr }} （{{ address.receiver_name }} 收） {{ address.receiver_mobile }}</dd>
-                        {% else %}
-                           <dd>   无</dd>
-                        {% endif %}
+	<div class="total_count">全部商品<em>2</em>件</div>
+	<ul class="cart_list_th clearfix">
+		<li class="col01">商品名称</li>
+		<li class="col02">商品单位</li>
+		<li class="col03">商品价格</li>
+		<li class="col04">数量</li>
+		<li class="col05">小计</li>
+		<li class="col06">操作</li>
+	</ul>
+	<ul class="cart_list_td clearfix">
+		<li class="col01"><input type="checkbox" name="" checked></li>
+		<li class="col02"><img src={% static "images/goods/goods012.jpg" %}></li>
+		<li class="col03">奇异果<br><em>25.80元/500g</em></li>
+		<li class="col04">500g</li>
+		<li class="col05">25.80元</li>
+		<li class="col06">
+			<div class="num_add">
+				<a href="javascript:;" class="add fl">+</a>
+				<input type="text" class="num_show fl" value="1">
+				<a href="javascript:;" class="minus fl">-</a>
+			</div>
+		</li>
+		<li class="col07">25.80元</li>
+		<li class="col08"><a href="javascript:;">删除</a></li>
+	</ul>
 
-					</dl>
-				</div>
-				<h3 class="common_title2">编辑地址</h3>
-				<div class="site_con">
-					<form method="post">
-                        {% csrf_token %}
-						<div class="form_group">
-							<label>收件人：</label>
-							<input type="text" name="receiver">
-						</div>
-						<div class="form_group form_group2">
-							<label>详细地址：</label>
-							<textarea class="site_area" name="address"></textarea>
-						</div>
-						<div class="form_group">
-							<label>邮编：</label>
-							<input type="text" name="zip_code">
-						</div>
-						<div class="form_group">
-							<label>手机：</label>
-							<input type="text" name="mobile">
-						</div>
-
-						<input type="submit" name="" value="提交" class="info_submit">
-					</form>
-                    <div style="color: red">{{ message }}</div>
-				</div>
-		</div>
-	</div>
+	<ul class="cart_list_td clearfix">
+		<li class="col01"><input type="checkbox" name="" checked></li>
+		<li class="col02"><img src={% static "images/goods/goods003.jpg" %}></li>
+		<li class="col03">大兴大棚草莓<br><em>16.80元/500g</em></li>
+		<li class="col04">500g</li>
+		<li class="col05">16.80元</li>
+		<li class="col06">
+			<div class="num_add">
+				<a href="javascript:;" class="add fl">+</a>
+				<input type="text" class="num_show fl" value="1">
+				<a href="javascript:;" class="minus fl">-</a>
+			</div>
+		</li>
+		<li class="col07">16.80元</li>
+		<li class="col08"><a href="javascript:;">删除</a></li>
+	</ul>
 
 
+	<ul class="settlements">
+		<li class="col01"><input type="checkbox" name="" checked=""></li>
+		<li class="col02">全选</li>
+		<li class="col03">合计(不含运费)：<span>¥</span><em>42.60</em><br>共计<b>2</b>件商品</li>
+		<li class="col04"><a href="place_order.html">去结算</a></li>
+	</ul>
 
 	<div class="footer">
 		<div class="foot_link">

@@ -1,21 +1,36 @@
 from django.contrib import admin
 
 # Register your models here.
+from django.core.cache import cache
+
 from apps.goods.models import GoodsCategory, GoodsSPU, GoodsSKU, GoodsImage, IndexCategoryGoods, IndexSlideGoods, \
     IndexPromotion
 from apps.orders.models import OrderInfo, OrderGoods
 from apps.users.models import TestModes, User, Address
+from celery_tasks.tasks import *
 
 
-class TestmodesAdmin(admin.ModelAdmin):
+class BaseAdmin(admin.ModelAdmin):
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        generate_static_index_html.delay()
+        cache.delete('index_page_data')
+    def delete_model(self, request, obj):
+        obj.delete()
+        generate_static_index_html.delay()
+        cache.delete('index_page_data')
+
+
+class TestmodesAdmin(BaseAdmin):
     list_display = [
         'status',
         'desc'
     ]
 
 
-class UserAdmin(admin.ModelAdmin):
+class UserAdmin(BaseAdmin):
     list_display = [
+        'id',
         'password',
         'last_login',
         'username',
@@ -29,7 +44,7 @@ class UserAdmin(admin.ModelAdmin):
     ]
 
 
-class AddressAdmin(admin.ModelAdmin):
+class AddressAdmin(BaseAdmin):
     list_display = [
         'create_time',
         'update_time',
@@ -43,7 +58,7 @@ class AddressAdmin(admin.ModelAdmin):
     ]
 
 
-class GoodsCategoryAdmin(admin.ModelAdmin):
+class GoodsCategoryAdmin(BaseAdmin):
     list_display = [
         'name',
         'logo',
@@ -51,14 +66,14 @@ class GoodsCategoryAdmin(admin.ModelAdmin):
     ]
 
 
-class GoodsSPUAdmin(admin.ModelAdmin):
+class GoodsSPUAdmin(BaseAdmin):
     list_display = [
         'name',
         'desc'
     ]
 
 
-class GoodsSKUAdmin(admin.ModelAdmin):
+class GoodsSKUAdmin(BaseAdmin):
     list_display = [
         'name',
         'title',
@@ -74,14 +89,14 @@ class GoodsSKUAdmin(admin.ModelAdmin):
     ]
 
 
-class GoodsImageAdmin(admin.ModelAdmin):
+class GoodsImageAdmin(BaseAdmin):
     list_display = [
         'image',
         'sku'
     ]
 
 
-class IndexCategoryGoodsAdmin(admin.ModelAdmin):
+class IndexCategoryGoodsAdmin(BaseAdmin):
     list_display = [
         'display_type',
         'category',
@@ -90,7 +105,7 @@ class IndexCategoryGoodsAdmin(admin.ModelAdmin):
     ]
 
 
-class IndexSlideGoodsAdmin(admin.ModelAdmin):
+class IndexSlideGoodsAdmin(BaseAdmin):
     list_display = [
         'image',
         'index',
@@ -98,7 +113,7 @@ class IndexSlideGoodsAdmin(admin.ModelAdmin):
     ]
 
 
-class IndexPromotionAdmin(admin.ModelAdmin):
+class IndexPromotionAdmin(BaseAdmin):
     list_display = [
         'name',
         'image',
@@ -107,7 +122,7 @@ class IndexPromotionAdmin(admin.ModelAdmin):
     ]
 
 
-class OrderInfoAdmin(admin.ModelAdmin):
+class OrderInfoAdmin(BaseAdmin):
     list_display = [
         'order_id',
         'total_count',
@@ -122,7 +137,7 @@ class OrderInfoAdmin(admin.ModelAdmin):
     ]
 
 
-class OrderGoodsAdmin(admin.ModelAdmin):
+class OrderGoodsAdmin(BaseAdmin):
     list_display = [
         'count',
         'price',

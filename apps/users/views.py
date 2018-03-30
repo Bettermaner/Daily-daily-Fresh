@@ -4,6 +4,7 @@ from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django_redis import get_redis_connection
 from itsdangerous import TimedJSONWebSignatureSerializer, SignatureExpired
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -13,6 +14,7 @@ from django.shortcuts import render
 from django.views.generic import View
 
 from DailyFresh import settings
+from apps.goods.models import GoodsSKU
 from apps.users.models import User, Address
 # from utils.common import send_active_email
 from celery_tasks.tasks import send_active_email
@@ -110,9 +112,32 @@ class LogoutView(View):
 class UserView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
-        address = user.address_set.latest('create_time')
+        try:
+            address = user.address_set.latest('create_time')
+        except Address.DoesNotExist:
+            address = None
 
-        return render(request, 'user.html', {'address': address})
+        strict_redis = get_redis_connection('default')
+        key = 'history_%s' % user.id
+        goods_ids = strict_redis.lrange(key, 0, 4)
+        print(goods_ids)
+
+        skus = []
+        for id in goods_ids:
+            print(id)
+            try:
+                sku = GoodsSKU.objects.get(id=id)
+                skus.append(sku)
+            except  GoodsSKU.DoesNotExist:
+                pass
+            http = 'http://127.0.0.1:8888/'
+        data = {
+            'skus': skus,
+            'address': address,
+            'http':http
+        }
+
+        return render(request, 'user.html', data)
 
 
 class OrderView(LoginRequiredMixin, View):

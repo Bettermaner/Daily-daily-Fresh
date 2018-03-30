@@ -125,3 +125,17 @@ EMAIL_HOST_PASSWORD = 'python123'
 EMAIL_FROM = '天天生鲜<l478811803@163.com>'
 
 LOGIN_URL = '/users/login'
+
+# 缓存
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/0",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": ""  # Redis密码，默认为空
+        }
+    }
+}
+
+DEFAULT_FILE_STORAGE = 'utils.fastdfs.storage.FdfsStorage'

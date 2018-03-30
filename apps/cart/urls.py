@@ -1,3 +1,7 @@
 from django.conf.urls import url, include
 
-# urlpatterns = [url(r'', )]
+from apps.cart.views import CartView
+
+urlpatterns = [
+    url(r'^cart$', CartView.as_view(), name='cart')
+]
