@@ -36,7 +36,7 @@
 					<span>|</span>
 					<a href="{% url 'cart:cart' %}">我的购物车</a>
 					<span>|</span>
-					<a href="{% url 'users:order' %}">我的订单</a>
+					<a href="{% url 'users:order' 1 %}">我的订单</a>
 				</div>
 			</div>
 		</div>
@@ -45,11 +45,13 @@
 	<div class="search_bar clearfix">
 		<a href="{% url 'goods:index' %}" class="logo fl"><img src={% static "images/logo.png" %}></a>
 		<div class="search_con fl">
-			<input type="text" class="input_text fl" name="" placeholder="搜索商品">
-			<input type="button" class="input_btn fr" name="" value="搜索">
+			<form action="/search/" method="get">
+            <input type="text" class="input_text fl" name="q" placeholder="搜索商品">
+            <input type="submit" class="input_btn fr" name="" value="搜索">
+            </form>
 		</div>
 		<div class="guest_cart fr">
-			<a href="#" class="cart_name fl">我的购物车</a>
+			<a href="{% url 'cart:cart' %}" class="cart_name fl">我的购物车</a>
 			<div class="goods_count fl" id="show_count">{{ cart_count }}</div>
 		</div>
 	</div>
@@ -77,7 +79,7 @@
 		<div class="slide fl">
 			<ul class="slide_pics">
                 {% for slide_sku in slide_skus %}
-                     <li><img src='{{ http }}{{ slide_sku.image }}' alt="幻灯片"></li>
+                    <a href="{% url 'goods:detail' slide_sku.sku.id %}"><li><img src='{{ http }}{{ slide_sku.image }}' alt="幻灯片"></li></a>
                 {% endfor %}
 
 
@@ -90,7 +92,7 @@
 
 		<div class="adv fl">
             {% for promotion in promotions %}
-                <a href="#"><img src='{{ http }}{{ promotion.image }}'></a>
+                <a href="{{ promotion.url }}"><img src='{{ http }}{{ promotion.image }}'></a>
             {% endfor %}
 
 		</div>
@@ -98,15 +100,15 @@
     {% for category in categories %}
 	<div class="list_model">
 		<div class="list_title clearfix">
-			<h3 class="fl" id="model01">{{ category.name }}</h3>
+			<h3 class="fl" id="model0{{ forloop.counter }}">{{ category.name }}</h3>
 			<div class="subtitle fl">
 				<span>|</span>
                     {% for skus in category.text_skus %}
-                        <a href="#">{{ skus.sku.name }}</a>
+                        <a href="{% url 'goods:detail' skus.sku.id %}">{{ skus.sku.name }}</a>
                     {% endfor %}
 
 			</div>
-			<a href="#" class="goods_more fr" id="fruit_more">查看更多 ></a>
+			<a href="{% url 'goods:list' category.id 1 %}?sort=default" class="goods_more fr" id="fruit_more">查看更多 ></a>
 		</div>
 
 		<div class="goods_con clearfix">
@@ -115,8 +117,8 @@
 
                 {% for skus in category.img_skus %}
                     <li>
-                        <h4><a href="#">{{ skus.sku.name }}</a></h4>
-                        <a href="#"><img src="{{ http }}{{ skus.sku.default_image }}"></a>
+                        <h4><a href="{% url 'goods:detail' skus.sku.id %}">{{ skus.sku.name }}</a></h4>
+                        <a href="{% url 'goods:detail' skus.sku.id %}"><img src="{{ http }}{{ skus.sku.default_image }}"></a>
                         <div class="prize">¥ {{ skus.sku.price }}</div>
                     </li>
                 {% endfor %}

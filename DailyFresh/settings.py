@@ -22,9 +22,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '8tlxip2rys4lt(t9sm$b@sp2$^6ict+a3n8+(1cbk_!00!nf3z'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -39,7 +39,8 @@ INSTALLED_APPS = (
     'apps.goods',
     'apps.cart',
     'apps.orders',
-    'tinymce'
+    'tinymce',
+    'haystack'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -139,3 +140,15 @@ CACHES = {
 }
 
 DEFAULT_FILE_STORAGE = 'utils.fastdfs.storage.FdfsStorage'
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        # 使用whoosh搜索引擎
+        'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
+        # 指定生成的索引库保存在哪个目录下
+        'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
+    }
+}
+
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 3

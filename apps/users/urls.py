@@ -10,6 +10,6 @@ urlpatterns = [
     url(r'^login$', LoginView.as_view(), name='login'),
     url(r'^logout$', LogoutView.as_view(), name='logout'),
     url(r'^user$', UserView.as_view(), name='user'),
-    url(r'^order$', OrderView.as_view(), name='order'),
+    url(r'^order/(\d+)$', OrderView.as_view(), name='order'),
     url(r'^address$', AddressView.as_view(), name='address')
 ]

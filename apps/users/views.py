@@ -3,6 +3,7 @@ import re
 from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
 from django_redis import get_redis_connection
 from itsdangerous import TimedJSONWebSignatureSerializer, SignatureExpired
@@ -15,6 +16,7 @@ from django.views.generic import View
 
 from DailyFresh import settings
 from apps.goods.models import GoodsSKU
+from apps.orders.models import OrderInfo, OrderGoods
 from apps.users.models import User, Address
 # from utils.common import send_active_email
 from celery_tasks.tasks import send_active_email
@@ -119,7 +121,7 @@ class UserView(LoginRequiredMixin, View):
 
         strict_redis = get_redis_connection('default')
         key = 'history_%s' % user.id
-        goods_ids = strict_redis.lrange(key, 0, 4)
+        goods_ids = strict_redis.lrange(key, 0, -1)
         print(goods_ids)
 
         skus = []
@@ -141,8 +143,33 @@ class UserView(LoginRequiredMixin, View):
 
 
 class OrderView(LoginRequiredMixin, View):
-    def get(self, request):
-        return render(request, 'order.html')
+    def get(self, request, page_num):
+
+        user = request.user
+        orders = OrderInfo.objects.filter(user=user).order_by('-create_time')
+        for order in orders:
+            order_skus = OrderGoods.objects.filter(order=order)
+            for order_sku in order_skus:
+                order_sku.amount = order_sku.count * order_sku.price
+
+            order.order_skus = order_skus
+            order.total_pay = order.total_amount + order.trans_cost
+            order.status_desc = OrderInfo.ORDER_STATUS.get(order.status)
+
+        paginator = Paginator(orders,1)
+        try:
+            page = paginator.page(page_num)
+        except:
+            page = paginator.page(1)
+
+        context = {
+            'page': page,
+            'page_range': paginator.page_range,
+        }
+
+            # 响应请求, 返回html界面
+        return render(request, 'order.html', context)
+
 
 
 class AddressView(LoginRequiredMixin, View):
